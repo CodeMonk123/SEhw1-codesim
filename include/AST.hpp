@@ -26,13 +26,3 @@ public:
 
 };
 
-class AST {
-private:
-    ASTNode* root;
-public:
-    AST(ASTNode*& root){
-        this->root = root;
-    }
-
-    void outputAST();
-};

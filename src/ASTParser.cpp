@@ -37,9 +37,6 @@ void ASTParser::parseTheAST()
         visitor,
         this);
 
-
-    root->outputASTNode();
-
     clang_disposeTranslationUnit(unit);
     clang_disposeIndex(index);
 }
@@ -52,7 +49,9 @@ CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData)
     ASTParser* parser = (ASTParser*) clientData;
     if (clang_getCursorKind(parent) == CXCursor_TranslationUnit)
     {
-        cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
+        if(parser->verbose) {
+            cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
+        }
         parser->cursorNodeMap.insert(pair<unsigned, ASTNode *>(clang_hashCursor(c), newNode));
         newNode->setDepth(parser->root->getDepth() + 1);
         parser->root->addChild(newNode);
@@ -63,7 +62,9 @@ CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData)
         newNode->setDepth(parentNode->getDepth() + 1);
         parser->cursorNodeMap.insert(pair<unsigned, ASTNode *>(clang_hashCursor(c), newNode));
         parentNode->addChild(newNode);
-        cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
+        if(parser->verbose) {
+            cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
+        }
     }
     return CXChildVisit_Recurse;
 }

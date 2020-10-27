@@ -35,6 +35,4 @@ void ASTNode::outputASTNode() {
     
 }
 
-void AST::outputAST() {
-    root->outputASTNode();
-}
+

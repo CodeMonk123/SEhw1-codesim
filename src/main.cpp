@@ -58,21 +58,47 @@ int main(int argc, const char *argv[])
     if (opt.isSet("-v"))
     {
         verboseSet = true;
-        cout << "verbose set true" << endl;
-    }
+        cout << "Verbose" << endl;
+    } 
 
-    std::string firstFile, secondFile;
-    if (opt.firstArgs.size() != 3)
+    string firstFile, secondFile;
+    if (verboseSet && opt.firstArgs.size() != 3)
     {
-    std:
-        cerr << "ERROR: Expected 2 arguments. Given" << opt.firstArgs.size() - 1 << endl;
+        cerr << "ERROR: Expected 2 arguments. Given: " << opt.firstArgs.size() - 1 << endl;
         Usage(opt);
         return 0;
     }
 
-    firstFile = *opt.firstArgs[1];
-    secondFile = *opt.firstArgs[2];
+    if (!verboseSet && argc != 3)
+    {
+        cerr << "ERROR: Expected 2 arguments. Given: " << argc - 1 << endl;
+        Usage(opt);
+        return 0;
+    }
 
-    std::cout << "Analyze: " << firstFile << " " << secondFile << endl;
+    firstFile = string(argv[1]);
+    secondFile = string(argv[2]);
+
+    if (verboseSet)
+    {
+        cout << "Analyzing: " << firstFile << " " << secondFile << endl;
+        cout << "Building AST:" << endl;
+    }
+
+    ASTParser parser = ASTParser(firstFile, verboseSet);
+    parser.parseTheAST();
+
+    ASTParser parser2 = ASTParser(secondFile, verboseSet);
+    parser2.parseTheAST();
+
+    if (verboseSet)
+    {
+        cout << "AST 1:" << endl;
+        parser.root->outputASTNode();
+        cout << "AST 2:" << endl;
+        parser2.root->outputASTNode();
+        cout << "Comparing two ASTs" << endl;
+    }
+
     return 0;
 }
