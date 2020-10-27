@@ -11,7 +11,9 @@ public:
 class YourClass
 {
   public:
-    int f(int a, int b) {
-      return a+b;
+    int add(int a, int b) {
+      int c = a+ b;
+      return c;
     }
 };
+

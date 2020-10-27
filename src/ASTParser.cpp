@@ -1,4 +1,8 @@
 #include <ASTParser.hpp>
+#include <iostream>
+
+using namespace std;
+CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData);
 
 ostream &operator<<(ostream &stream, const CXString &str)
 {
@@ -6,6 +10,7 @@ ostream &operator<<(ostream &stream, const CXString &str)
     clang_disposeString(str);
     return stream;
 }
+
 
 void ASTParser::parseTheAST()
 {
@@ -26,14 +31,39 @@ void ASTParser::parseTheAST()
     }
 
     CXCursor cursor = clang_getTranslationUnitCursor(unit);
+
     clang_visitChildren(
-        cursor, [](CXCursor c, CXCursor parent, CXClientData data) {
-            cout << "Cursor kind:" << clang_getCursorSpelling(c) << " of kind " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
-            cout << "Parent is " << clang_getCursorSpelling(parent) << " of kind " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << endl;
-            return CXChildVisit_Recurse;
-        },
-        nullptr);
+        cursor,
+        visitor,
+        this);
+
+
+    root->outputASTNode();
 
     clang_disposeTranslationUnit(unit);
     clang_disposeIndex(index);
+}
+
+// 把ASTParser当作ClientData传入
+CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData)
+{ 
+    // cout << cursor2String(c) << endl;
+    ASTNode *newNode = new ASTNode(clang_getCursorKind(c));
+    ASTParser* parser = (ASTParser*) clientData;
+    if (clang_getCursorKind(parent) == CXCursor_TranslationUnit)
+    {
+        cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
+        parser->cursorNodeMap.insert(pair<unsigned, ASTNode *>(clang_hashCursor(c), newNode));
+        newNode->setDepth(parser->root->getDepth() + 1);
+        parser->root->addChild(newNode);
+    }
+    else
+    {
+        ASTNode *parentNode = parser->cursorNodeMap.at(clang_hashCursor(parent));
+        newNode->setDepth(parentNode->getDepth() + 1);
+        parser->cursorNodeMap.insert(pair<unsigned, ASTNode *>(clang_hashCursor(c), newNode));
+        parentNode->addChild(newNode);
+        cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
+    }
+    return CXChildVisit_Recurse;
 }
