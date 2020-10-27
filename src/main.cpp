@@ -1,5 +1,7 @@
 #include <ASTParser.hpp>
 #include <ezOptionParser.hpp>
+#include <Detect.hpp>
+#include <iomanip>
 using namespace std;
 
 void Usage(ez::ezOptionParser &opt)
@@ -100,5 +102,15 @@ int main(int argc, const char *argv[])
         cout << "Comparing two ASTs" << endl;
     }
 
+    vector<string> seq1 = parser.root->tranverse();
+    vector<string> seq2 = parser2.root->tranverse();
+
+    if(verboseSet) 
+    {
+        cout << "Generating sequence 1: "<<seq1[0] <<" "<<seq1[1] <<"..."  <<endl;
+        cout << "Generating sequence 2: " << seq2[0]<<" "<<seq2[1] << "..." <<endl;
+    }
+
+    cout<< fixed << setprecision(2) << GreedyStringTiling(seq1, seq2) << "%" << endl;
     return 0;
 }

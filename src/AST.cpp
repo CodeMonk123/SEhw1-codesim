@@ -35,4 +35,12 @@ void ASTNode::outputASTNode() {
     
 }
 
-
+vector<string> ASTNode::tranverse() {
+    vector<string> result;
+    result.push_back(this->kindName);
+    for(auto p=this->children.begin(); p != this->children.end(); p++) {
+        vector<string> temp = (*p)->tranverse();
+        result.insert(result.end(), temp.begin(), temp.end());
+    }
+    return result;
+}

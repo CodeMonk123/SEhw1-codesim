@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <clang-c/Index.h>
 #include <vector>
@@ -15,6 +16,7 @@ public:
     int getDepth();
     void setDepth(int);
     void addChild(ASTNode* node);
+    // 构造函数: 根据传入的kind来设置变量和名称
     ASTNode(CXCursorKind kind) {
         this->nodeKind = kind;
         this->kindName = clang_getCString(clang_getCursorKindSpelling(kind));
@@ -22,7 +24,11 @@ public:
         // cout << "new node: " << this->kindName << endl;
     }
 
+    // 递归打印AST
     void outputASTNode();
-
+    
+    // 前序遍历生成Sequence
+    vector<string> tranverse();
+    
 };
 

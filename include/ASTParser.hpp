@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <clang-c/Index.h>
 #include <clang-c/Platform.h>
