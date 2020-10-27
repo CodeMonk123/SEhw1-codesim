@@ -67,7 +67,7 @@ ln -s /usr/include/clang-c /usr/lib/llvm-10/include/clang-c
 然后当我们#include<clang-c/Index.h>时，vscode就可以解析了
 
 ## 项目配置
-
+``` shell
 czh@n33:~/codeism$ tree
 .
 ├── ASTParser.o
@@ -85,6 +85,9 @@ czh@n33:~/codeism$ tree
 └── test
     ├── testcase1.hpp
     └── testcase2.hpp
+
+```
+
 我的项目的结构是这样，include包含公用头文件，代码在src中，lib中放一些第三方的包，比如argparser之类的，如果有的话。似乎头文件放到include中，就可以自动找到，不需要额外处理，但是在编译时仍然需要特殊处理一下。
 
 ## G++ 编译
