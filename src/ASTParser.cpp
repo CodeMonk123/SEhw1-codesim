@@ -1,7 +1,9 @@
 #include <ASTParser.hpp>
 #include <iostream>
+#include "Global.hpp"
 
 using namespace std;
+
 CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData);
 
 ostream &operator<<(ostream &stream, const CXString &str)
@@ -49,7 +51,7 @@ CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData)
     ASTParser* parser = (ASTParser*) clientData;
     if (clang_getCursorKind(parent) == CXCursor_TranslationUnit)
     {
-        if(parser->verbose) {
+        if(verboseSet) {
             cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
         }
         parser->cursorNodeMap.insert(pair<unsigned, ASTNode *>(clang_hashCursor(c), newNode));
@@ -62,7 +64,7 @@ CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData)
         newNode->setDepth(parentNode->getDepth() + 1);
         parser->cursorNodeMap.insert(pair<unsigned, ASTNode *>(clang_hashCursor(c), newNode));
         parentNode->addChild(newNode);
-        if(parser->verbose) {
+        if(verboseSet) {
             cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
         }
     }

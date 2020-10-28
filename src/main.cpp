@@ -1,100 +1,46 @@
 #include <ASTParser.hpp>
-#include <ezOptionParser.hpp>
 #include <Detect.hpp>
 #include <iomanip>
+#include <clipp.h>
+#include <Global.hpp>
 using namespace std;
 
-void Usage(ez::ezOptionParser &opt)
+bool verboseSet;
+
+int main(int argc, char *argv[])
 {
-    std::string usage;
-    opt.getUsage(usage);
-    std::cout << usage;
-};
-
-// int main()
-// {
-//     string filename;
-//     cin >> filename;
-//     ASTParser parser = ASTParser(filename);
-//     parser.parseTheAST();
-// }
-
-int main(int argc, const char *argv[])
-{
-    ez::ezOptionParser opt;
-    opt.overview = "Codesim aims to find the similarity of two cpp/hpp files.";
-    opt.syntax = "./codesim FIRST SECOND [OPTIONS]";
-    opt.example = "./codesim A.cpp B.cpp --verbose\n";
-    opt.footer = "Codesim 0.0.1, developed by CuiZihan\n";
-
-    opt.add(
-        "",
-        0,
-        0,
-        0,
-        "verbose (display runtime information)",
-        "-v",
-        "--verbose");
-
-    opt.add(
-        "",                            // Default.
-        0,                             // Required?
-        0,                             // Number of args expected.
-        0,                             // Delimiter if expecting multiple args.
-        "Display usage instructions.", // Help description.
-        "-h",                          // Flag token.
-        "-help",                       // Flag token.
-        "--help",                      // Flag token.
-        "--usage"                      // Flag token.
-    );
-
-    opt.parse(argc, argv);
-
-    if (opt.isSet("-h"))
-    {
-        Usage(opt);
-        return 0;
-    }
-
-    bool verboseSet = false;
-    if (opt.isSet("-v"))
-    {
-        verboseSet = true;
-        cout << "Verbose" << endl;
-    } 
 
     string firstFile, secondFile;
-    if (verboseSet && opt.firstArgs.size() != 3)
-    {
-        cerr << "ERROR: Expected 2 arguments. Given: " << opt.firstArgs.size() - 1 << endl;
-        Usage(opt);
+    bool helpSet = false;
+    verboseSet = false;
+    auto cli = (
+        clipp::value("input file1", firstFile),
+        clipp::value("input file2", secondFile),
+        clipp::option("-v", "--verbose").set(verboseSet).doc("verbose(show more details)").required(false),
+        clipp::option("-h", "--help").set(helpSet).doc("help(guide how to use codesim)").required(false)
+    );
+
+    if(!clipp::parse(argc, argv, cli)) {
+        cout << clipp::make_man_page(cli, argv[0]);
+        return -1;
+    }
+
+    if(helpSet) {
+        cout << clipp::make_man_page(cli, argv[0]);
         return 0;
     }
+    
 
-    if (!verboseSet && argc != 3)
-    {
-        cerr << "ERROR: Expected 2 arguments. Given: " << argc - 1 << endl;
-        Usage(opt);
-        return 0;
-    }
-
-    firstFile = string(argv[1]);
-    secondFile = string(argv[2]);
-
-    if (verboseSet)
-    {
-        cout << "Analyzing: " << firstFile << " " << secondFile << endl;
-        cout << "Building AST:" << endl;
-    }
-
-    ASTParser parser = ASTParser(firstFile, verboseSet);
+    ASTParser parser = ASTParser(firstFile);
     parser.parseTheAST();
 
-    ASTParser parser2 = ASTParser(secondFile, verboseSet);
+    ASTParser parser2 = ASTParser(secondFile);
     parser2.parseTheAST();
 
     if (verboseSet)
     {
+        cout << "First file:" << firstFile << endl;
+        cout << "Second file:" << secondFile << endl;
         cout << "AST 1:" << endl;
         parser.root->outputASTNode();
         cout << "AST 2:" << endl;

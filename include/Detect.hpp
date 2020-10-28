@@ -1,9 +1,11 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include "Global.hpp"
 using namespace std;
 
 const int MIN_MATCH_LENGTH = 2;
+
 
 struct match
 {
@@ -99,6 +101,9 @@ double GreedyStringTiling(vector<string> p, vector<string> t)
             }
         }
         if(isAvailable) {
+            if(verboseSet) {
+                cout << "Find am avaliable tile: (" << tiles[i].index1 << ", " << tiles[i].index2 << ", " << tiles[i].length << ")" <<endl;
+            }
             matchLength += tiles[i].length;
         }
     }
