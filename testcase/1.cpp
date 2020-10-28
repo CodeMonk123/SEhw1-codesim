@@ -1,5 +1,8 @@
+#include<iostream>
+# include<algorithm>
+# include <math.h>
 
- 
+
 int gptb2(float a, float b, float c, float* x1, float* x2)
 {
     float del;

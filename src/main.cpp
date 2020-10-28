@@ -3,13 +3,14 @@
 #include <iomanip>
 #include <clipp.h>
 #include <Global.hpp>
+#include <unistd.h>
+#include <PrePorcess.hpp>
 using namespace std;
 
 bool verboseSet;
 
 int main(int argc, char *argv[])
 {
-
     string firstFile, secondFile;
     bool helpSet = false;
     verboseSet = false;
@@ -30,11 +31,12 @@ int main(int argc, char *argv[])
         return 0;
     }
     
-
-    ASTParser parser = ASTParser(firstFile);
+    string file1 = createTempFile(firstFile);
+    string file2 = createTempFile(secondFile);
+    ASTParser parser = ASTParser(file1);
     parser.parseTheAST();
 
-    ASTParser parser2 = ASTParser(secondFile);
+    ASTParser parser2 = ASTParser(file2);
     parser2.parseTheAST();
 
     if (verboseSet)
@@ -48,15 +50,8 @@ int main(int argc, char *argv[])
         cout << "Comparing two ASTs" << endl;
     }
 
-    vector<string> seq1 = parser.root->tranverse();
-    vector<string> seq2 = parser2.root->tranverse();
-
-    if(verboseSet) 
-    {
-        cout << "Generating sequence 1: "<<seq1[0] <<" "<<seq1[1] <<"..."  <<endl;
-        cout << "Generating sequence 2: " << seq2[0]<<" "<<seq2[1] << "..." <<endl;
-    }
-
-    cout<< fixed << setprecision(2) << GreedyStringTiling(seq1, seq2) << "%" << endl;
+    cout<< fixed << setprecision(2) << GreedyStringTiling(parser, parser2)  << endl;
+    removeTempFile(file1);
+    removeTempFile(file2);
     return 0;
 }

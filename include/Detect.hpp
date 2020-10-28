@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include "Global.hpp"
+#include "ASTParser.hpp"
 using namespace std;
 
 const int MIN_MATCH_LENGTH = 5;
@@ -15,8 +16,17 @@ struct match
     match(int index1, int index2, int length) : index1(index1), index2(index2), length(length) {}
 };
 
-double GreedyStringTiling(vector<string> p, vector<string> t)
+double GreedyStringTiling(const ASTParser& ast1, const ASTParser& ast2)
 {
+    vector<string> p = ast1.root->tranverse();
+    vector<string> t = ast2.root->tranverse();
+
+    if(verboseSet) 
+    {
+        cout << "Generating sequence 1" << "..." <<endl;
+        cout << "Generating sequence 2" << "..." <<endl;
+    }
+
     if (p.size() > t.size())
     {
         vector<string> temp = p;

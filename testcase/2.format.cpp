@@ -1,3 +1,4 @@
+
 int gptb2(float a, float b, float c, float * x1, float * x2) {
   float del;
   del = b * b - (4 * a * c);
