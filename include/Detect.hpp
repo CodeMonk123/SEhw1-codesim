@@ -4,7 +4,7 @@
 #include "Global.hpp"
 using namespace std;
 
-const int MIN_MATCH_LENGTH = 2;
+const int MIN_MATCH_LENGTH = 5;
 
 
 struct match

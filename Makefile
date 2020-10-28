@@ -19,7 +19,13 @@ clean:
 	rm -f codesim
 
 test: codesim
-	./codesim ./test/testcase1.hpp ./test/testcase2.hpp -v
+	./codesim ./testcase/1.cpp  ./testcase/1.format.cpp
+	./codesim ./testcase/1.cpp  ./testcase/2.format.cpp 
+	./codesim ./testcase/1.cpp  ./testcase/3.format.cpp 
+	./codesim ./testcase/1.cpp  ./testcase/4.format.cpp 
+	./codesim ./testcase/1.cpp  ./testcase/5.format.cpp 
+	./codesim ./testcase/1.cpp  ./testcase/6.format.cpp 
+	./codesim ./testcase/1.cpp  ./testcase/7.format.cpp  
 
 push:
 	git add .
