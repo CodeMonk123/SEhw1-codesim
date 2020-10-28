@@ -24,6 +24,13 @@ test: codesim
 	./codesim ./testcase/1.cpp  ./testcase/2.format.cpp 
 	./codesim ./testcase/1.cpp  ./testcase/3.format.cpp 
 	./codesim ./testcase/1.cpp  ./testcase/4.format.cpp 
+	./codesim ./testcase/2.format.cpp ./testcase/3.format.cpp
+	./codesim ./testcase/2.format.cpp ./testcase/4.format.cpp
+	./codesim ./testcase/3.format.cpp ./testcase/4.format.cpp
+	./codesim ./testcase/5.format.cpp ./testcase/6.format.cpp
+	./codesim ./testcase/5.format.cpp ./testcase/7.format.cpp
+	./codesim ./testcase/6.format.cpp ./testcase/7.format.cpp
+
 	./codesim ./testcase/1.cpp  ./testcase/5.format.cpp 
 	./codesim ./testcase/1.cpp  ./testcase/6.format.cpp 
 	./codesim ./testcase/1.cpp  ./testcase/7.format.cpp  
