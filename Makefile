@@ -11,7 +11,7 @@ ast-parser:
 
 
 
-.PHONY: clean test
+.PHONY: clean test push
 
 clean:
 	rm -f *.o
@@ -19,4 +19,9 @@ clean:
 	rm -f codesim
 
 test: codesim
-	./codesim test1 test2 --verbose
+	./codesim ./test/testcase1.hpp ./test/testcase2.hpp -v
+
+push:
+	git add .
+	git commit -m"update"
+	git push origin master
