@@ -2,6 +2,7 @@ CC = g++
 CPPFLAGS = -g -std=c++11 -lclang
 LLVM_INCLUDE = /usr/lib/llvm-10/include
 LLVM_LIB = /usr/lib/llvm-10/lib
+MESSAGE?=update
 
 codesim: clean ast-parser
 	$(CC) -o codesim AST.o ASTParser.o src/main.cpp -I ./include -I ./lib/include  -I $(LLVM_INCLUDE) -L $(LLVM_LIB) $(CPPFLAGS)
@@ -29,5 +30,5 @@ test: codesim
 
 push:
 	git add .
-	git commit -m"update"
+	git commit -m "$(MESSAGE)"
 	git push origin master
