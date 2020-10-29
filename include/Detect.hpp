@@ -5,7 +5,7 @@
 #include "ASTParser.hpp"
 using namespace std;
 
-const int MIN_MATCH_LENGTH = 5;
+const int MIN_MATCH_LENGTH = 6;
 
 
 struct match

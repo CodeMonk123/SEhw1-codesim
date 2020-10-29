@@ -49,6 +49,12 @@ CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData)
     // cout << cursor2String(c) << endl;
     ASTNode *newNode = new ASTNode(clang_getCursorKind(c));
     ASTParser* parser = (ASTParser*) clientData;
+    // exclude the headers
+    if(clang_Location_isFromMainFile(clang_getCursorLocation(c)) == 0)
+    {
+        return CXChildVisit_Continue;
+    }
+
     if (clang_getCursorKind(parent) == CXCursor_TranslationUnit)
     {
         if(verboseSet) {

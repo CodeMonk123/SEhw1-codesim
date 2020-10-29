@@ -4,7 +4,6 @@
 #include <clipp.h>
 #include <Global.hpp>
 #include <unistd.h>
-#include <PrePorcess.hpp>
 using namespace std;
 
 bool verboseSet;
@@ -31,12 +30,10 @@ int main(int argc, char *argv[])
         return 0;
     }
     
-    string file1 = createTempFile(firstFile);
-    string file2 = createTempFile(secondFile);
-    ASTParser parser = ASTParser(file1);
+    ASTParser parser = ASTParser(firstFile);
     parser.parseTheAST();
 
-    ASTParser parser2 = ASTParser(file2);
+    ASTParser parser2 = ASTParser(secondFile);
     parser2.parseTheAST();
 
     if (verboseSet)
@@ -51,7 +48,5 @@ int main(int argc, char *argv[])
     }
 
     cout<< fixed << setprecision(2) << GreedyStringTiling(parser, parser2)  << endl;
-    removeTempFile(file1);
-    removeTempFile(file2);
     return 0;
 }

@@ -1,3 +1,6 @@
+#include<iostream>
+# include<algorithm>
+# include <math.h>
 int main() {
   float a, b, x2, c, x1;
   scanf("%f%f%f", & a, & b, & c);
