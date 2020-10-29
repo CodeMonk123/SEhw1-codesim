@@ -1,4 +1,5 @@
-#include <AST.hpp>
+#include "AST.hpp"
+#include "Logger.hpp"
 using namespace std;
 
 string ASTNode::getKindName() {
@@ -26,9 +27,9 @@ int ASTNode::getDepth() {
 void ASTNode::outputASTNode() {
     
     for(int i = 0; i < depth - 1; i++) {
-        cout <<"  ";
+        Logger::info("  ");
     }
-    cout <<"--|"<<kindName<< endl;
+    Logger::info("--|",kindName,"\n"); 
     for(int i = 0; i < children.size(); i++) {
         children[i]->outputASTNode();
     }

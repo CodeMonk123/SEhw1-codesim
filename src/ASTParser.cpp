@@ -1,6 +1,6 @@
-#include <ASTParser.hpp>
+#include "ASTParser.hpp"
 #include <iostream>
-#include "Global.hpp"
+#include "Logger.hpp"
 
 using namespace std;
 
@@ -28,7 +28,7 @@ void ASTParser::parseTheAST()
 
     if (unit == nullptr)
     {
-        cerr << "Unable to parse translation unit. Aborting." << endl;
+        Logger::error("Unable to parse translation unit. Aborting.\n");
         exit(-1);
     }
 
@@ -57,9 +57,8 @@ CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData)
 
     if (clang_getCursorKind(parent) == CXCursor_TranslationUnit)
     {
-        if(verboseSet) {
-            cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
-        }
+        Logger::info("Add an edge: Parent:", clang_getCursorKindSpelling(clang_getCursorKind(parent)), "|","Children:",clang_getCursorKindSpelling(clang_getCursorKind(c)), "\n");
+        
         parser->cursorNodeMap.insert(pair<unsigned, ASTNode *>(clang_hashCursor(c), newNode));
         newNode->setDepth(parser->root->getDepth() + 1);
         parser->root->addChild(newNode);
@@ -70,9 +69,7 @@ CXChildVisitResult visitor(CXCursor c, CXCursor parent, CXClientData clientData)
         newNode->setDepth(parentNode->getDepth() + 1);
         parser->cursorNodeMap.insert(pair<unsigned, ASTNode *>(clang_hashCursor(c), newNode));
         parentNode->addChild(newNode);
-        if(verboseSet) {
-            cout << "Parent: " << clang_getCursorKindSpelling(clang_getCursorKind(parent)) << " | Children: " << clang_getCursorKindSpelling(clang_getCursorKind(c)) << endl;
-        }
+        Logger::info("Add an edge: Parent:", clang_getCursorKindSpelling(clang_getCursorKind(parent)), "|","Children:",clang_getCursorKindSpelling(clang_getCursorKind(c)), "\n");
     }
     return CXChildVisit_Recurse;
 }

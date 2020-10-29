@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 #include <iostream>
-#include "Global.hpp"
 #include "ASTParser.hpp"
+#include "Logger.hpp"
 using namespace std;
 
 const int MIN_MATCH_LENGTH = 6;
@@ -18,14 +18,11 @@ struct match
 
 double GreedyStringTiling(const ASTParser& ast1, const ASTParser& ast2)
 {
+    Logger::info("Generating sequence 1...\n");
     vector<string> p = ast1.root->tranverse();
+    Logger::info("Generating sequence 2...\n");
     vector<string> t = ast2.root->tranverse();
 
-    if(verboseSet) 
-    {
-        cout << "Generating sequence 1" << "..." <<endl;
-        cout << "Generating sequence 2" << "..." <<endl;
-    }
 
     if (p.size() > t.size())
     {
@@ -111,9 +108,7 @@ double GreedyStringTiling(const ASTParser& ast1, const ASTParser& ast2)
             }
         }
         if(isAvailable) {
-            if(verboseSet) {
-                cout << "Find am avaliable tile: (" << tiles[i].index1 << ", " << tiles[i].index2 << ", " << tiles[i].length << ")" <<endl;
-            }
+            Logger::info("Find an avaliable tile:(",tiles[i].index1, ",", tiles[i].index2,",",tiles[i].length,")\n");
             matchLength += tiles[i].length;
         }
     }

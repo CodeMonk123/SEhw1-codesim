@@ -1,18 +1,17 @@
-#include <ASTParser.hpp>
-#include <Detect.hpp>
+#include "ASTParser.hpp"
+#include "Detect.hpp"
 #include <iomanip>
-#include <clipp.h>
-#include <Global.hpp>
-#include <unistd.h>
+#include "clipp.h"
+#include "Logger.hpp"
 using namespace std;
 
-bool verboseSet;
+bool Logger::verbose;
 
 int main(int argc, char *argv[])
 {
     string firstFile, secondFile;
     bool helpSet = false;
-    verboseSet = false;
+    bool verboseSet = false;
     auto cli = (
         clipp::value("input file1", firstFile),
         clipp::value("input file2", secondFile),
@@ -29,24 +28,24 @@ int main(int argc, char *argv[])
         cout << clipp::make_man_page(cli, argv[0]);
         return 0;
     }
+
+    Logger::verbose = verboseSet;
+
+    Logger::info("First file:", firstFile, "\n");
+    Logger::info("Second file:", secondFile, "\n");
+
     
     ASTParser parser = ASTParser(firstFile);
     parser.parseTheAST();
+    Logger::info("AST1: ", "\n");
+    parser.root->outputASTNode();
 
     ASTParser parser2 = ASTParser(secondFile);
     parser2.parseTheAST();
-
-    if (verboseSet)
-    {
-        cout << "First file:" << firstFile << endl;
-        cout << "Second file:" << secondFile << endl;
-        cout << "AST 1:" << endl;
-        parser.root->outputASTNode();
-        cout << "AST 2:" << endl;
-        parser2.root->outputASTNode();
-        cout << "Comparing two ASTs" << endl;
-    }
-
+    Logger::info("AST2: ", "\n");
+    parser2.root->outputASTNode();
+    
+    Logger::info("Comparing two ASTs", "\n");
     cout<< fixed << setprecision(2) << GreedyStringTiling(parser, parser2)  << endl;
     return 0;
 }
