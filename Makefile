@@ -1,7 +1,7 @@
 CC = g++
 CPPFLAGS = -g -std=c++11 -lclang
-LLVM_INCLUDE = /usr/lib/llvm-10/include
-LLVM_LIB = /usr/lib/llvm-10/lib
+LLVM_INCLUDE = `llvm-config --includedir`
+LLVM_LIB = `llvm-config --libdir`
 MESSAGE?=update
 
 codesim: clean ast-parser
