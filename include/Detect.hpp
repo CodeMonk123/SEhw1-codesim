@@ -5,7 +5,7 @@
 #include "Logger.hpp"
 using namespace std;
 
-const int MIN_MATCH_LENGTH = 6;
+const int MIN_MATCH_LENGTH = 4;
 
 
 struct match
@@ -101,8 +101,11 @@ double GreedyStringTiling(const ASTParser& ast1, const ASTParser& ast2)
     // FIXME: 对于交叠的tiles，应该只计算一次
     for(int i = 0; i < tiles.size(); i++) {
         bool isAvailable = true;
-        for(int j = 0; j < i; j++) {
-            if(tiles[j].index1 < tiles[i].index1 && tiles[j].index1 + tiles[j].length > tiles[i].index1) {
+        for(int j = 0; j < tiles.size(); j++) {
+            if(i==j) {
+                continue;
+            }
+            if(tiles[j].index1 <= tiles[i].index1 && tiles[j].index1 + tiles[j].length > tiles[i].index1) {
                 isAvailable = false;
                 break;
             }
