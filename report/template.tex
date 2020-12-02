@@ -1,0 +1,100 @@
+\documentclass[UTF8]{ctexart}
+\CTEXsetup[format={\Large\bfseries}]{section}
+\input{head}
+
+\geometry{a4paper,scale=0.8}
+\begin{document}
+\fancyhead[C]{}
+\hrule \medskip % Upper rule
+\begin{minipage}{0.295\textwidth} 
+\raggedright
+\footnotesize
+崔子寒 \hfill\\   
+MG20330012 \hfill\\
+zihancui@smail.nju.edu.cn
+\end{minipage}
+\begin{minipage}{0.4\textwidth} 
+\centering 
+\large 
+Assignment 1: Codesim\\ 
+\normalsize 
+ISER, 20\\ 
+\end{minipage}
+\begin{minipage}{0.295\textwidth} 
+\raggedleft
+\today\hfill\\
+\end{minipage}
+\medskip\hrule 
+\bigskip
+
+\section{开发环境和运行方法}
+
+\begin{tabu} to \hsize {|X|X[2,l]|}
+\hline
+\multicolumn{2}{|c|}{开发环境}\\ \hline
+操作系统 & Ubuntu 18.04.4 LTS (GNU/Linux 4.15.0-111-generic x86\_64) \\ \hline
+编译器 & g++ (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 \\\hline
+\texttt{llvm} & 10.0.0 \\\hline
+\texttt{clang} & clang version 10.0.0-4ubuntu1  \\ \hline
+\multicolumn{2}{|c|}{编译运行}\\ \hline
+编译方法 & 在项目目录下执行\texttt{make}指令进行编译 \\\hline
+运行 &  ./codesim <input file1> <input file2> [-v] [-h] \\\hline
+\end{tabu}
+
+\section{解析Abstract Syntax Tree(AST)}
+\subsection{\texttt{Clang}介绍}
+\texttt{Clang}是一个适用于C,C++,Objective-C以及Objective-C++的编译器前端。通常和编译器后端\texttt{LLVM}一起使用。在程序的编译过程中，通常分为前端和后端两个阶段，前端又叫做分析阶段，在这一阶段会完成语法分析、语义分析和中间代码生成，这部分和机器无关。而编译器的后端则只需要前端输出的中间表示，结合具体的机器进行优化，生成可执行的目标程序。
+
+\texttt{Clang}提供了各种用于语法分析和语义分析的工具，但是直接使用这些工具是不合适的，我们需要在程序中使用这些功能。为此，\texttt{Clang}提供了\texttt{libclang}库。\texttt{libclang}是\texttt{Clang}的高层次的C语言编程接口，尽管在Python和Go等语言中都可以通过Cython或者Cgo来使用libclang，但是还是原生的C++更加稳定。因此我使用C++来进行开发。
+\subsection{使用\texttt{libclang}解析AST}
+AST是代码编译过程中产生的一种代码中间表示，可以反映出语法的层次结构。在AST中，每一个节点都是一个语法符号，一个节点的到它的所有子节点对应一个语法的推导。因为在AST中，我们略去了变量、函数等在程序源代码中的名字，只关注程序的语法结构，所以对AST进行相似度检测可以检测出更换变量名称等抄袭方法。
+
+\texttt{libclang}提供了\texttt{clang\_visitChildren}函数，可以帮助我们遍历源程序中对语法单元，并构建语法树。\texttt{clang\_visitChildren}要求我们提供一个\texttt{visit}函数，在遍历源程序对过程中，当遇到了一个语法单元，就会调用\texttt{visit}。\texttt{visit}的参数有当前的语法单元，当前语法单元的父节点，以及一个自定义的数据类型。我们可以通过在\texttt{visit}中将节点之间的父子关系储存到自定义的数据类型中，构建出AST。构建出的AST可以用下面的这种数据结构表示。从根结点触发进行前序遍历，就可以得到一个\texttt{vector<string>}，也就是一个字符串序列，每一个元素都是一个语法单元的名称。通过对两个字符串序列进行相似度检测，就可以判断出源代码中是否存在抄袭。
+\begin{lstlisting}[language=C++]
+class ASTNode {
+private:
+    vector<ASTNode*> children;
+    int depth;
+}
+\end{lstlisting}
+\section{\texttt{Greedy String tilling}相似度算法}
+\texttt{Greedy String tilling}相似度算法可以检测两个序列型数据的相似度，相比于最长公共子串，\texttt{Greedy String tilling}可以更好的检测顺序更换的情况。\texttt{Greedy String tilling}通过寻找序列中不重叠的若干个匹配长度之和的最大值来得到两个序列的相似度。
+\begin{algorithm}[H]
+    \caption{Greedy String tilling}
+    \begin{algorithmic}[1]
+        \REQUIRE vector<string> $v_1,v_2$
+        \ENSURE similarity of $v_1,v_2$
+        \STATE $tiles := \{\}$
+        \REPEAT 
+            \STATE $matches := \{\}$
+           \STATE maxMatchLength := MIN\_MATCH\_LENGHT
+           \FOR{$i:=0;i<length(v_1);i++$}
+                \FOR{$j:=0;j<length(v_2);j++$}
+                    \STATE $k := 0$
+                    \WHILE{$v_1[i+k] = v_2[j+k] \land unmarked(v_1[i+k]) \land unmarked(v_2[j+k])$}
+                        \STATE $k:=k+1$
+                    \ENDWHILE
+                    \IF{$k=$maxMatchLength}
+                        \STATE $matches := matches \cup match(i,j,k) $
+                    \ELSE
+                        \STATE $matches := \{match(i,j,k)\}$
+                        \STATE maxMatchLength := $k$
+                    \ENDIF
+                \ENDFOR
+           \ENDFOR
+           
+           \FOR{$match(i,j,k)\ in\ matches$}
+                \STATE $mark(v_1, i, i+k),mark(v_2, j,j+k)$
+                \STATE $tiles := tiles \cup \{match(i,j,k)\}$
+           \ENDFOR
+        \UNTIL maxMatchLength < MIN\_MATCH\_LENGHT
+        \RETURN $\frac{\sum_{tile\in tiles}length(tile)}{length(v_1) + length(v_2)}$
+    \end{algorithmic}
+\end{algorithm}
+注意最后一步，需要求所有tile之和时，需要过滤掉有重叠的tile，有重叠的tile只计算最长的。
+
+
+
+
+\end{document}
+
